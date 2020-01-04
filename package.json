@@ -1,11 +1,12 @@
 {
-  "name": "node-auto-update",
+  "name": "@alanwei43/node-auto-update",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rm -rf dist/ && tsc"
+    "build": "rm -rf dist/ && tsc",
+    "docker": "node dist/docker.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,8 @@
   "homepage": "https://github.com/alanwei43/node-auto-update#readme",
   "dependencies": {},
   "devDependencies": {
+    "@types/node": "^13.1.4",
     "typescript": "^3.7.4"
-  }
+  },
+  "publishConfig": { "registry": "https://npm.pkg.github.com/" }
 }

@@ -1,1 +1,1 @@
-# pm2-auto-update
+# 自动更新Node应用
