@@ -1,8 +1,7 @@
 import { appendFile, existsSync, writeFileSync } from "fs";
 import { join } from "path";
 
-
-let globalCount: number = 0
+let globalCount: number = 0;
 
 function padding(str: any, count: number) {
     return (str + "").padStart(count, " ");

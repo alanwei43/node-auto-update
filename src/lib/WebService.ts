@@ -1,6 +1,6 @@
 import http from "http";
 import { AppContainer } from "./AppContainer";
-import { Logger } from "./Logger";
+import { Logger } from "./Log";
 
 export async function createServer(port: number, app: AppContainer) {
     http.createServer((req, res) => {
