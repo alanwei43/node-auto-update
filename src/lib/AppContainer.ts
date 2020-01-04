@@ -20,15 +20,13 @@ export class AppContainer {
     }
     async update(): Promise<void> {
         const config = await this.getConfig();
-        let dest = "";
+        const dest = `${this._name}-${Date.now()}`;
         if (config.git) {
-            dest = `${this._name}-${Date.now()}`;
             const cloneResult = await clone(config.git, dest);
             const buildResult = await execCmd(cloneResult.dest, config.build);
         }
-        const mainScriptPath = path.join(dest, config.main);
         await this.killAllProcess();
-        const proc = await runScript(mainScriptPath, []);
+        const proc = await runScript(config.main, [], path.join(process.cwd(), dest));
         this.runProcs.push(proc);
     }
     private async killAllProcess(): Promise<void[]> {
@@ -43,12 +41,12 @@ export class AppContainer {
             }
 
             proc.send(JSON.stringify({
-                type: "auto_update",
+                type: "kill",
             }));
             setTimeout(function () {
                 proc.kill();
                 resolve();
-            }, 1000);
+            }, 500);
         });
     }
     public async getConfig(): Promise<AppConfig> {

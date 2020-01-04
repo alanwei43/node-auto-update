@@ -5,3 +5,5 @@ docker run -d \
 -p 3010:3010 \
 -p 3005:3005 \
 node-auto-update:$1
+
+docker ps

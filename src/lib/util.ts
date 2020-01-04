@@ -18,6 +18,8 @@ export async function execCmd(dest: string, commands: string[]): Promise<{ stdou
     return exected;
 }
 
-export function runScript(script: string, args: string[]): ChildProcess {
-    return fork(script, args);
+export function runScript(script: string, args: string[], cwd: string): ChildProcess {
+    return fork(script, args, {
+        cwd: cwd
+    });
 }

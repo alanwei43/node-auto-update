@@ -1,5 +1,4 @@
 FROM node:lts
-
 WORKDIR /app
 COPY ./package.json ./package-lock.json tsconfig.json ./
 COPY ./src ./src

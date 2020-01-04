@@ -1,7 +1,7 @@
 {
   "name": "@alanwei43/node-auto-update",
   "version": "0.0.2",
-  "description": "",
+  "description": "node auto update",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
