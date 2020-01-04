@@ -7,6 +7,12 @@ export async function clone(git: string, dest: string): Promise<{ dest: string, 
 }
 
 export async function execCmd(dest: string, commands: string[]): Promise<{ stdout: string, stderr: string }> {
+    if (!commands || !commands.length) {
+        return {
+            stderr: "",
+            stdout: "empty_commands"
+        };
+    }
     const allCommands = [`cd ${dest}`].concat(commands).join(" && ");
     const exected = await promisify(exec)(allCommands);
     return exected;

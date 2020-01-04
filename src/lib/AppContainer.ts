@@ -3,7 +3,9 @@ import fs from "fs";
 import path from "path";
 import { promisify } from "util";
 import { clone, execCmd, runScript } from "./util";
-import { request } from "http";
+import url from "url";
+import http from "http";
+import https from "https";
 
 export interface AppConfig {
     git: string
@@ -14,16 +16,13 @@ export interface AppConfig {
 export class AppContainer {
     private runProcs: cp.ChildProcess[]
     constructor(private _name: string, private _config: AppConfig | string) {
-        if (!fs.existsSync(this._name)) {
-            fs.mkdirSync(this._name);
-        }
         this.runProcs = [];
     }
     async update(): Promise<void> {
         const config = await this.getConfig();
         let dest = "";
         if (config.git) {
-            dest = `${name}-app-${Date.now()}`;
+            dest = `${this._name}-${Date.now()}`;
             const cloneResult = await clone(config.git, dest);
             const buildResult = await execCmd(cloneResult.dest, config.build);
         }
@@ -55,7 +54,8 @@ export class AppContainer {
     public async getConfig(): Promise<AppConfig> {
         return new Promise((resolve, reject) => {
             if (typeof this._config === "string") {
-                const req = request(this._config, {
+                const web = url.parse(this._config).protocol === "https:" ? https : http;
+                const req = web.request(this._config, {
                     method: "GET"
                 }, res => {
                     let configJson = "";
