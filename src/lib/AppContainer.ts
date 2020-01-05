@@ -20,7 +20,7 @@ export class AppContainer {
     }
     async update(): Promise<void> {
         const config = await this.getConfig();
-        const dest = `${this._name}-${Date.now()}`;
+        const dest = `${this._name}-${new Date().toISOString().replace(/[^\d]/g, ".")}`;
         if (config.git) {
             const cloneResult = await clone(config.git, dest);
             const buildResult = await execCmd(cloneResult.dest, config.build);
