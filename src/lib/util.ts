@@ -20,12 +20,19 @@ export async function execCmdInDest(dest: string, commands: string[]): Promise<A
     if (!commands || !commands.length) {
         return [];
     }
-    const results: Array<{ command: string, stdout: string, stderr: string }> = [];
-    for (let cmd of [`cd ${dest}`, ...commands]) {
-        const result = await promisify(exec)(cmd);
-        results.push({ command: cmd, ...result });
-    }
-    return results;
+    const joinedCommands = [`cd ${dest}`, ...commands].join(" && ");
+    const results = await await promisify(exec)(joinedCommands);
+    return [{
+        command: joinedCommands,
+        ...results
+    }];
+
+    // const results: Array<{ command: string, stdout: string, stderr: string }> = [];
+    // for (let cmd of [`cd ${dest}`, ...commands]) {
+    //     const result = await promisify(exec)(cmd);
+    //     results.push({ command: cmd, ...result });
+    // }
+    // return results;
 }
 
 /**

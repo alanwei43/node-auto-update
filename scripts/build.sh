@@ -1,0 +1,1 @@
+docker build -t node-auto-update:0.0.1 ./ 

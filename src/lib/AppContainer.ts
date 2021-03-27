@@ -25,15 +25,16 @@ export class AppContainer {
     async update(): Promise<void> {
         this.logger.debug(`接收到应用更新通知`);
         const config = await this.getConfig();
+        const delay = config.updateDelay || 10 * 1000;
         if (this.updateTimer) {
-            this.logger.debug(`触发防抖`);
+            this.logger.debug(`触发防抖: ${delay}`);
             clearTimeout(this.updateTimer);
             this.updateTimer = null;
         }
         this.updateTimer = setTimeout(() => {
             this.doUpdate(config);
             this.updateTimer = null;
-        }, config.updateDelay || 10 * 60 * 1000);
+        }, delay);
     }
     private async doUpdate(config: AppConfig): Promise<void> {
         this.logger.debug("执行代码更新");
@@ -47,10 +48,11 @@ export class AppContainer {
             const buildResult = await execCmdInDest(cloneResult.dest, config.build);
             this.logger.debug(`build结果: ${JSON.stringify(buildResult)}`);
         }
-        this.logger.debug("准备杀死之前所有进程");
+        this.logger.debug(`准备杀死之前所有进程(线程数量: ${this.runProcs.length})`);
         await this.killAllProcess();
         this.logger.debug(`准备运行start脚本`);
         const proc = await runScript(config.main, config.mainArgs || [], path.join(process.cwd(), dest));
+        this.logger.debug(`start脚本执行完成, 线程id: ${proc.pid}`);
         this.runProcs.push(proc);
     }
     private async killAllProcess(): Promise<void[]> {

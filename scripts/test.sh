@@ -4,6 +4,6 @@ docker run -d \
 --name node-web-test \
 -p 3010:3010 \
 -p 3005:3005 \
-node-auto-update:$1
+node-auto-update:0.0.1
 
 docker ps
