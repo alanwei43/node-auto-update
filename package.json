@@ -4,7 +4,6 @@
   "description": "node auto update",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rm -rf dist/ && tsc",
     "docker": "node dist/docker.js"
   },
@@ -24,5 +23,7 @@
     "@types/node": "^13.1.4",
     "typescript": "^3.7.4"
   },
-  "publishConfig": { "registry": "https://npm.pkg.github.com/" }
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  }
 }

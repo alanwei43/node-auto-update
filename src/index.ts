@@ -1,13 +1,14 @@
-import { AppConfig, AppContainer } from "./lib/AppContainer";
+import { AppConfig } from "./lib/AppConfig";
+import { AppContainer } from "./lib/AppContainer";
 import { createServer } from "./lib/WebService";
 
-export default async function (name: string, config: AppConfig | string, port: number): Promise<AppContainer> {
+export default function (name: string, config: AppConfig | string, port: number): AppContainer {
     const app = new AppContainer(name, config);
     if (typeof port === "number") {
         setTimeout(function () {
             createServer(port, app);
         });
     }
-    await app.update();
+    app.update();
     return app;
 }

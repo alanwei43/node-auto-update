@@ -3,6 +3,11 @@ import { AppContainer } from "./AppContainer";
 import { Logger } from "./Log";
 import path from "path";
 
+/**
+ * 创建Web服务
+ * @param port 端口号
+ * @param app 
+ */
 export async function createServer(port: number, app: AppContainer) {
     http.createServer((req, res) => {
         res.writeHead(200, {
