@@ -5,9 +5,8 @@ name: Publish Node.js Package
 
 on:
   push:
-    branches:
-      - master
-
+    # branches:
+    #   - master
     tags:
       - v*
 
