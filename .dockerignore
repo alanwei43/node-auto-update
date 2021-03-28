@@ -5,5 +5,4 @@ dist/
 scripts/
 .gitignore
 *.log
-types/
 applications/

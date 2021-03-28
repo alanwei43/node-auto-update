@@ -11,8 +11,11 @@
     "type": "git",
     "url": "git+https://github.com/alanwei43/node-auto-update.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "docker",
+    "auto-update"
+  ],
+  "author": "Alan Wei",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/alanwei43/node-auto-update/issues"
@@ -23,6 +26,9 @@
     "@types/node": "^13.1.4",
     "typescript": "^3.7.4"
   },
-  "publishConfig": {
-  }
+  "publishConfig": {},
+  "files": [
+    "dist/"
+  ],
+  "types": "dist/index.d.ts"
 }

@@ -1,3 +1,3 @@
-import StartUp from "./index";
+import { boot } from "./index";
 
-StartUp(process.env.CONFIG_URL, parseInt(process.env.SERVER_PORT));
+boot(process.env.CONFIG_URL, parseInt(process.env.SERVER_PORT));

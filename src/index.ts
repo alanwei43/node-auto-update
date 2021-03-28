@@ -7,7 +7,7 @@ import { createMainServer } from "./lib/MainServer";
  * @param config 应用配置列表
  * @param port 更新伺服监听端口号
  */
-export default async function (config: Array<AppConfig> | string, port: number): Promise<Array<AppContainer>> {
+export async function boot(config: Array<AppConfig> | string, port: number): Promise<Array<AppContainer>> {
     let appConfigList: Array<AppConfig> = null;
     if (typeof config === "string") {
         appConfigList = await getAppConfig(config);

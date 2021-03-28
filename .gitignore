@@ -108,3 +108,6 @@ dist
 scripts/docker-pub-autohome.sh
 types/
 applications/
+src/**/*.d.ts
+src/**/*.map
+src/**/*.js
