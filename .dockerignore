@@ -5,4 +5,4 @@ dist/
 scripts/
 .gitignore
 *.log
-src/test/
+types/
