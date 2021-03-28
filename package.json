@@ -1,6 +1,6 @@
 {
-  "name": "@alanwei43/node-auto-update",
-  "version": "0.0.3",
+  "name": "node-auto-update",
+  "version": "0.0.5",
   "description": "node auto update",
   "main": "dist/index.js",
   "scripts": {
