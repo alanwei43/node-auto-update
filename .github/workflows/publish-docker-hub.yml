@@ -11,7 +11,7 @@ on:
       - v*
 
 env:
-  IMAGE_NAME: docker-node-auto-update
+  IMAGE_NAME: node-auto-update
 
 jobs:
   push:

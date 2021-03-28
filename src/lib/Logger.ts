@@ -1,11 +1,17 @@
-import { appendFile } from "fs";
+import { appendFile, existsSync, mkdirSync } from "fs";
 import { join } from "path";
 export class Logger {
     private logger: string
     private logFilePath: string
     constructor(logger: string) {
         this.logger = logger;
-        this.logFilePath = join(process.cwd(), `${this.logger}.log`);
+        const dir = join(process.cwd(), "logs");
+        if (!existsSync(dir)) {
+            mkdirSync(dir, {
+                recursive: true
+            });
+        }
+        this.logFilePath = join(dir, `${this.logger}.log`);
     }
     private writeLogTxt(args: any[]): any[] {
         args.unshift(`[${new Date().toISOString()} ${this.logger}]`);

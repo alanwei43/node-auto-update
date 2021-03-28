@@ -106,5 +106,5 @@ dist
 
 .DS_Store
 scripts/docker-pub-autohome.sh
-src/test/
 types/
+applications/

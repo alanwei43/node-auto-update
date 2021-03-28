@@ -1,30 +1,46 @@
 import cp from "child_process";
 import path from "path";
 import { clone, execCmdInDest, runScript } from "./util";
-import url from "url";
-import http from "http";
-import https from "https";
 import { Logger } from "./Logger";
-import { AppConfig } from "./AppConfig";
-import fs from "fs";
+import { AppConfig, validConfig } from "./AppConfig";
 
 export class AppContainer {
     private runProcs: cp.ChildProcess[]
     private logger: Logger
     private updateTimer: NodeJS.Timeout
+    private config: AppConfig
 
     /**
      * 创建应用
-     * @param _name 应用名称
-     * @param _config 应用配置(支持配置URL、配文文件、或者配置对象)
+     * @param config 应用配置
      */
-    constructor(private _name: string, private _config: AppConfig) {
+    constructor(userConfig: AppConfig) {
+        const result = validConfig(userConfig);
+        if (!result.valid) {
+            const error = `invalid config: ${JSON.stringify(result)}`;
+            Logger.init("error").error(error);
+            throw new Error(error);
+        }
+
+        this.config = result.config;
         this.runProcs = [];
-        this.logger = new Logger(this._name);
+        this.logger = new Logger(this.config.name);
+    }
+    public getInfo(): { name: string, config: AppConfig, processes: Array<{ id: number }> } {
+        return {
+            name: this.config.name,
+            config: this.config,
+            processes: this.runProcs.map(p => ({
+                id: p.pid,
+                stderr: p.stderr,
+                stdout: p.stdout,
+                killed: p.killed,
+            }))
+        }
     }
     async update(): Promise<void> {
         this.logger.debug(`接收到应用更新通知`);
-        const config = this._config;
+        const config = this.config;
         const delay = config.updateDelay || 10 * 1000;
         if (this.updateTimer) {
             this.logger.debug(`触发防抖: ${delay}`);
@@ -39,19 +55,20 @@ export class AppContainer {
     private async doUpdate(config: AppConfig): Promise<void> {
         this.logger.debug("执行代码更新");
         this.logger.debug(`获取到配置: ${JSON.stringify(config)}`);
-        const dest = `${this._name}-${new Date().toJSON().replace(/:/g, "-")}-${Math.random().toString(16).split(".")[1]}`;
-        this.logger.debug(`clone目标目录名: ${dest}`);
-        if (config.git) {
-            this.logger.debug(`准备clone项目`);
-            const cloneResult = await clone(config.git, dest);
-            this.logger.debug(`clone结果: ${JSON.stringify(cloneResult)}`);
-            const buildResult = await execCmdInDest(cloneResult.dest, config.build);
-            this.logger.debug(`build结果: ${JSON.stringify(buildResult)}`);
-        }
-        this.logger.debug(`准备杀死之前所有进程(线程数量: ${this.runProcs.length})`);
+        this.logger.debug(`准备clone项目`);
+
+        const cloneParentDir = path.join("applications", this.config.name);
+        const cloneResult = await clone(config.git, cloneParentDir);
+        this.logger.debug(`clone结果: ${JSON.stringify(cloneResult)}`);
+        const appDir = path.join(process.cwd(), cloneResult.dir);
+        this.logger.debug(`应用目录: ${appDir}`);
+        const buildResult = await execCmdInDest(appDir, config.build);
+        this.logger.debug(`build结果: ${JSON.stringify(buildResult)}`);
+
+        this.logger.debug(`准备杀死之前所有进程(应用已使用的线程数量: ${this.runProcs.length})`);
         await this.killAllProcess();
         this.logger.debug(`准备运行start脚本`);
-        const proc = await runScript(config.main, config.mainArgs || [], path.join(process.cwd(), dest));
+        const proc = await runScript(config.mainJs, config.mainJsArgs || [], appDir);
         this.logger.debug(`start脚本执行完成, 线程id: ${proc.pid}`);
         this.runProcs.push(proc);
     }

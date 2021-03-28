@@ -1,20 +1,27 @@
-import { AppConfig } from "./lib/AppConfig";
+import { AppConfig, getAppConfig } from "./lib/AppConfig";
 import { AppContainer } from "./lib/AppContainer";
-import { getAppConfig } from "./lib/util";
-import { createMainServer } from "./lib/WebService";
+import { createMainServer } from "./lib/MainServer";
 
-export default async function (name: string, config: AppConfig | string, port: number): Promise<AppContainer> {
-    let appConfig: AppConfig = null;
+/**
+ * 启动
+ * @param config 应用配置列表
+ * @param port 更新伺服监听端口号
+ */
+export default async function (config: Array<AppConfig> | string, port: number): Promise<Array<AppContainer>> {
+    let appConfigList: Array<AppConfig> = null;
     if (typeof config === "string") {
-        appConfig = await getAppConfig(config);
+        appConfigList = await getAppConfig(config);
     } else {
-        appConfig = config;
+        appConfigList = config;
     }
 
-    const app = new AppContainer(name, appConfig);
+    const apps = appConfigList.map(config => {
+        const app = new AppContainer(config);
+        app.update();
+        return app;
+    });
     if (typeof port === "number") {
-        await createMainServer(port, app);
+        await createMainServer(port, apps);
     }
-    app.update();
-    return app;
+    return apps;
 }
