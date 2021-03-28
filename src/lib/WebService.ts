@@ -1,6 +1,6 @@
 import http from "http";
 import { AppContainer } from "./AppContainer";
-import { Logger } from "./Log";
+import { Logger } from "./Logger";
 import path from "path";
 
 /**
@@ -8,11 +8,14 @@ import path from "path";
  * @param port 端口号
  * @param app 
  */
-export async function createServer(port: number, app: AppContainer) {
+export async function createMainServer(port: number, app: AppContainer) {
+    const logger = new Logger("main");
+    logger.debug("准备启动伺服");
     http.createServer((req, res) => {
         res.writeHead(200, {
             "Content-Type": "application/json"
         });
+        logger.debug("请求: ", req.url);
         if (req.url === "/update") {
             app.update();
         }
@@ -23,6 +26,6 @@ export async function createServer(port: number, app: AppContainer) {
             dirname: path.join(__dirname)
         }));
     }).listen(port, () => {
-        Logger.debug(`listen ${port}`);
+        logger.debug(`listen ${port}`);
     });
 }

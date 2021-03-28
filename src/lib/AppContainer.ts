@@ -4,13 +4,13 @@ import { clone, execCmdInDest, runScript } from "./util";
 import url from "url";
 import http from "http";
 import https from "https";
-import { Log } from "./Log";
+import { Logger } from "./Logger";
 import { AppConfig } from "./AppConfig";
 import fs from "fs";
 
 export class AppContainer {
     private runProcs: cp.ChildProcess[]
-    private logger: Log
+    private logger: Logger
     private updateTimer: NodeJS.Timeout
 
     /**
@@ -18,13 +18,13 @@ export class AppContainer {
      * @param _name 应用名称
      * @param _config 应用配置(支持配置URL、配文文件、或者配置对象)
      */
-    constructor(private _name: string, private _config: AppConfig | string) {
+    constructor(private _name: string, private _config: AppConfig) {
         this.runProcs = [];
-        this.logger = new Log(this._name);
+        this.logger = new Logger(this._name);
     }
     async update(): Promise<void> {
         this.logger.debug(`接收到应用更新通知`);
-        const config = await this.getConfig();
+        const config = this._config;
         const delay = config.updateDelay || 10 * 1000;
         if (this.updateTimer) {
             this.logger.debug(`触发防抖: ${delay}`);
@@ -75,55 +75,6 @@ export class AppContainer {
                 proc.kill();
                 resolve();
             }, 500);
-        });
-    }
-    /**
-     * 更新配置
-     */
-    private async getConfig(): Promise<AppConfig> {
-        return new Promise((resolve, reject) => {
-
-            if (typeof this._config === "string") {
-
-                if (fs.existsSync(this._config)) {
-                    // 读取配置文件
-                    this.logger.debug(`尝试从文件中(${this._config})读取配置`);
-                    const fileContent = fs.readFileSync(this._config, {
-                        encoding: "utf8"
-                    }).toString();
-                    this.logger.debug(`读取到的文件(${this._config})内容: ${fileContent}`);
-                    resolve(JSON.parse(fileContent));
-                    return;
-                }
-
-                // 读取远程配置
-                this.logger.debug(`尝试从Web远程${this._config}读取配置`);
-                const web = url.parse(this._config).protocol === "https:" ? https : http;
-                const req = web.request(this._config, {
-                    method: "GET"
-                }, res => {
-                    let configJson = "";
-                    res.on("data", chunk => {
-                        configJson += chunk;
-                    });
-                    res.on("end", () => {
-                        try {
-                            this.logger.debug(`从Web远程${this._config}读取到配置内容: ${configJson}`);
-                            const config = JSON.parse(configJson);
-                            resolve(config);
-                        } catch (ex) {
-                            reject(new Error(`config_parse_fail:${ex.message}`));
-                        }
-                    })
-                });
-                req.on("error", err => {
-                    reject(err);
-                });
-                req.end();
-            } else {
-                // 直接解析配置
-                resolve(this._config);
-            }
         });
     }
 }

@@ -13,7 +13,11 @@
                 "node_modules/*",
                 "src/types/*"
             ]
-        }
+        },
+        "declaration": true,
+        "declarationDir": "types",
+        "declarationMap": true,
+        "emitDecoratorMetadata": true
     },
     "include": [
         "src/**/*"

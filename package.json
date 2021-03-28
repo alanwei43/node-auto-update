@@ -5,8 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "rm -rf dist/ && tsc",
-    "docker": "node dist/docker.js",
-    "docker:build": "docker build -t node-auto-update:0.0.1 ./"
+    "docker": "node dist/docker.js"
   },
   "repository": {
     "type": "git",
