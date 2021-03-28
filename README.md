@@ -70,13 +70,31 @@ node-auto-update:0.0.1
 
 ### Node应用
 
-你也可以在你的项目里安装使用:
+你也可以在你的项目里安装依赖:
 
 ```bash
-npm install ndoe-auto-update
+npm install node-auto-update
 ```
 
-具体代码参考[示例代码](./src/test/local-debug.ts)
+以下是示例代码([参考](./src/test/local-debug.ts)):
+
+```javascript
+const app = require("node-auto-update");
+(async () => {
+    /**
+     * mainJs, build 等参数根据你的Node应用自行设定
+     */ 
+    const containers = await app.boot([{
+        "name": "express-web",
+        "git": "https://gitee.com/alanway/test-node-web.git",
+        "mainJs": "src/app.js",
+        "build": [
+            "npm install"
+        ]
+    }]);
+    console.log(containers);
+})();
+```
 
 ## Road Map
 
